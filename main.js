@@ -7,7 +7,7 @@ angular.module('500lines', []).controller('Spreadsheet', function ($scope, $time
   function* range(cur, end) { 
     while (cur <= end) { 
       yield cur;
-      cur = isNaN( cur ) ? String.fromCodePoint( cur.codePointAt() + 1 ) : cur + 1; 
+      cur = (isNaN( cur ) ? String.fromCodePoint( cur.codePointAt() + 1 ) : cur + 1); 
     }}
 
     // UP(38) and DOWN(40)/ ENTER(13) move focus to the row above (-1) and below (+1)
@@ -25,14 +25,14 @@ angular.module('500lines', []).controller('Spreadsheet', function ($scope, $time
 
     // Default sheet content, with some data cells and one formula cell.
     $scope.reset = () => {
-      $scope.sheet = { A1: 1874, B1:  '+', C1: 2046, D1: '->', E1: '=A1+C1' }; 
+      $scope.sheet = { A1: 1874, B1:  '+', C1: 2046, D1: '⇒', E1: '=A1+C1' }; 
       console.log("reset was called")
     }
     
     // Define the initializer, and immediately call it
     ($scope.init = ()=> {
       // Restore the previous .sheet; reset to default if it's the first run
-      $scope.sheet = angular.fromJson( localStorage.getItem('@RadSpreadsheet') );
+      $scope.sheet = angular.fromJson( localStorage.getItem('') );
       if (!$scope.sheet) { $scope.reset(); }
       $scope.worker = new Worker( 'worker.js' );
     }).call();
@@ -59,9 +59,8 @@ angular.module('500lines', []).controller('Spreadsheet', function ($scope, $time
       // When the worker returns, apply its effect on the scope
 
       $scope.worker.onmessage = ({data}) => {
-        console.log("onmessage was called")
         $timeout.cancel( promise );
-        localStorage.setItem('@RadSpreadsheet', json);
+        localStorage.setItem('', json);
         $timeout( () => { [$scope.errs, $scope.vals] = data; } );
       };
 

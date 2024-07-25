@@ -4,8 +4,7 @@ self.onmessage = ({data})=> {
   for (const coord in sheet) {
     // Four variable names pointing to the same coordinate: A1, a1, $A1, $a1
     [ '', '$' ].map( p => [ coord, coord.toLowerCase() ].map(c => {
-      const name = p + c;
-      console.log(sheet, errs, vals);
+      const name = p + c;        
       // Worker is reused across calculations, so only define each variable once
       if ((Object.getOwnPropertyDescriptor( self, name) || {}).get) { return; }
       // Define self['A1'], which is the same thing as the glbal variable A1
@@ -31,9 +30,9 @@ self.onmessage = ({data})=> {
           errs[coord] = e.toString();
         }
 
-        // Turn vals[coord] into a string if it's not a number or Boolean
+        // Turn vals[   coord] into a string if it's not a number or Boolean
         switch (typeof vals[coord]) {
-          case 'function': case 'object': vals[coord] +='';
+          case 'function': case 'object': vals[coord]+='';
         }
         return vals[coord];
       } } );
@@ -41,5 +40,6 @@ self.onmessage = ({data})=> {
   }
   // For each coordinate in the sheet, call the property getter defined above
   for (const coord in sheet) { self[coord]; }
-  return [ errs, vals ];
+  console.log(errs, vals)
+  postMessage([ errs, vals ]);
 };
